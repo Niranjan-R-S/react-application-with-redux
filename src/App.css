@@ -15,7 +15,6 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,4 +34,58 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.btn{
+  background: #ff012f;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 5px;
+  float: right;
+  margin-right: 10px;
+}
+
+.todo-title{
+  background: #717479;
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+}
+
+form{
+  display: flex;
+  padding: 2px;
+}
+
+form input[type="text"]{
+  flex: 10;
+  padding: 10px;
+}
+
+form input[type="submit"]{
+  flex: 2;
+  color: #fff;
+  background: #717479;
+}
+
+.non-completed-todo{
+  background: #1fdda4;
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+}
+
+.completed{
+  background: #717479;
+  width: 10px;
+  height: 10px;
+  padding: 10px;
+}
+
+.not-completed{
+  background: #1fdda4;
+  width: 10px;
+  height: 10px;
+  padding: 10px;
 }
