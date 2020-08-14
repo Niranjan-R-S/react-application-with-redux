@@ -1,20 +1,36 @@
 import React, { Component } from 'react'
 import Todo from './Todo'
 import AddTodo from './AddTodo';
+import { connect } from 'react-redux';
+import { fetchTodos, addTodo, deleteTodo, updateTodo } from '../actions/todosAction';
+import { FETCH_TODOS, ADD_TODO, DELETE_TODO } from '../actions/types';
+
 class Todos extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            todos: []
-        }
+    componentDidMount(){
+        this.props.fetchTodos();
     }
 
-    componentDidMount(){
-        fetch('https://jsonplaceholder.typicode.com/todos?_limit=10')
-        .then(res => res.json())
-        .then(data => this.setState({
-            todos: data
-        }))
+    componentWillReceiveProps(nextProps){
+        if(nextProps.actionType === ADD_TODO){
+            const newTodo = {
+                id: this.props.todos.length + 1,
+                title: nextProps.todo.title,
+                completed: false
+            };
+
+            this.props.todos.push(newTodo);
+        }else if(nextProps.actionType === DELETE_TODO){
+            let index;
+            this.props.todos.forEach(element => {
+                if(element.id === nextProps.id){
+                    index = this.props.todos.indexOf(element)
+                }
+            });
+
+            this.props.todos.splice(index, 1);
+        }else{
+            console.log(FETCH_TODOS);
+        }
     }
 
     addTodo = (title) => {
@@ -23,26 +39,7 @@ class Todos extends Component {
             completed: false
         }
 
-        fetch('https://jsonplaceholder.typicode.com/todos', {
-            method: 'Post',
-            headers: {
-                'content-type': 'application/json' 
-            }, 
-            body: JSON.stringify(newTodo)
-        })
-        .then(res => res.json())
-        .then(data => {
-            const todo = {
-                id: this.state.todos.length + 1,
-                title: data.title,
-                completed: false
-            }
-            this.setState({
-                todos: [...this.state.todos, todo]
-            })
-        })
-        
-        
+        this.props.addTodo(newTodo);
     }
 
     deleteTodo = (id) => {
@@ -50,21 +47,16 @@ class Todos extends Component {
         if(id > 200){
             todoId = 201
         }
-        fetch(`https://jsonplaceholder.typicode.com/todos/${todoId}`, {
-            method: 'Delete'
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            this.setState({
-                todos: this.state.todos.filter(todo => todo.id !== id)
-            })
-        })
+        this.props.deleteTodo(todoId);
+    }
+
+    updateTodo = (updatedTodo, todoId) => {
+        this.props.updateTodo(updatedTodo, todoId);
     }
 
     render() {
-        const TodoItems = this.state.todos.map(todo =>
-            <Todo key={todo.id} todo={todo} deleteTodo={this.deleteTodo}/>
+        const TodoItems = this.props.todos.map(todo =>
+            <Todo key={todo.id} todo={todo} deleteTodo={this.deleteTodo} updateTodo={this.updateTodo}/>
         )
         return (
             <div>
@@ -89,4 +81,12 @@ class Todos extends Component {
     }
 }
 
-export default Todos
+const mapStateToProps = state => ({
+    todos: state.todos.todos,
+    todo: state.todos.todo,
+    id: state.todos.id,
+    updatedTodo: state.todos.updatedTodo,
+    actionType: state.todos.actionType
+});
+
+export default connect(mapStateToProps, { fetchTodos, addTodo, deleteTodo, updateTodo })(Todos);

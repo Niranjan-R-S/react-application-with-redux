@@ -15,26 +15,20 @@ class Todo extends Component {
     }
 
     updateTodo = () => {
-        const updateTodo = {
-            completed: !this.state.completed
+        const updatedTodo = {
+            id: this.state.id,
+            completed: !this.state.completed,
+            title: this.state.title
         }
         let todoId = this.state.id
         if(this.state.id > 200){
             todoId = 201
         }
-        fetch(`https://jsonplaceholder.typicode.com/todos/${todoId}`, {
-            method: 'Put',
-            headers: {
-                'content-type': 'application/json'
-            },
-            updateTodo
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            this.setState({
-                completed: !this.state.completed
-            })  
+
+        this.props.updateTodo(updatedTodo, todoId)
+
+        this.setState({
+            completed: !this.state.completed
         })
     }
 
