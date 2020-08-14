@@ -10,38 +10,55 @@ class Todos extends Component {
     }
 
     componentDidMount(){
-        this.setState({
-            todos: [{
-                id: 1,
-                title: "Todo one",
-                completed: false
-            }, {
-                id: 2,
-                title: "Todo two",
-                completed: true
-            },{
-                id: 3,
-                title: "Todo three",
-                completed: false
-            }]
-        })
+        fetch('https://jsonplaceholder.typicode.com/todos?_limit=10')
+        .then(res => res.json())
+        .then(data => this.setState({
+            todos: data
+        }))
     }
 
     addTodo = (title) => {
         const newTodo={
-            id: this.state.todos.length + 1,
             title: title,
             completed: false
         }
 
-        this.setState({
-            todos: [...this.state.todos, newTodo]
+        fetch('https://jsonplaceholder.typicode.com/todos', {
+            method: 'Post',
+            headers: {
+                'content-type': 'application/json' 
+            }, 
+            body: JSON.stringify(newTodo)
         })
+        .then(res => res.json())
+        .then(data => {
+            const todo = {
+                id: this.state.todos.length + 1,
+                title: data.title,
+                completed: false
+            }
+            this.setState({
+                todos: [...this.state.todos, todo]
+            })
+        })
+        
+        
     }
 
     deleteTodo = (id) => {
-        this.setState({
-            todos: this.state.todos.filter(todo => todo.id !== id)
+        let todoId = id
+        if(id > 200){
+            todoId = 201
+        }
+        fetch(`https://jsonplaceholder.typicode.com/todos/${todoId}`, {
+            method: 'Delete'
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            this.setState({
+                todos: this.state.todos.filter(todo => todo.id !== id)
+            })
         })
     }
 
